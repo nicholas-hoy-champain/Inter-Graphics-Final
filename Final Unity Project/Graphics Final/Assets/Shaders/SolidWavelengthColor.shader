@@ -88,7 +88,7 @@ Shader "Unlit/SolidWavelengthColor"
                 CIErg.y = CIErgb.y / CIErgb_sum;
                 CIErg.z = CIErgb.y;
 
-                float done = step(0.0, CIErgb.x) * step(CIErgb.x, 1.0)
+                /*float done = step(0.0, CIErgb.x) * step(CIErgb.x, 1.0)
                     * step(0.0, CIErgb.y) * step(CIErgb.y, 1.0)
                     * step(0.0, CIErgb.z) * step(CIErgb.z, 1.0);
 
@@ -101,11 +101,10 @@ Shader "Unlit/SolidWavelengthColor"
                     done = step(0.0, CIErgb.x) * step(CIErgb.x, 1.0)
                         * step(0.0, CIErgb.y) * step(CIErgb.y, 1.0)
                         * step(0.0, CIErgb.z) * step(CIErgb.z, 1.0);
-                }
+                }*/
 
                 CIErgb = CIErgb * 1/max(max(CIErgb.x, CIErgb.y), CIErgb.z);
  
-
                 fixed4 col = float4(CIErgb, 1);
 
                 // apply fog
