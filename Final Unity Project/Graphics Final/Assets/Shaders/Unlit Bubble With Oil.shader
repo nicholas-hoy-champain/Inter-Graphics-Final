@@ -60,6 +60,11 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 float3 viewPos : TEXCOORD1;
                 float2 uv : TEXCOORD2;
                 float4 vertex : SV_POSITION;
+
+                // credits to http://kylehalladay.com/blog/tutorial/2014/02/18/Fresnel-Shaders-From-The-Ground-Up.html
+                // and https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel for the theory of the fresnel effect
+
+                float fresnelValue : FRESNEL;
                 UNITY_FOG_COORDS(1)
             };
 
@@ -91,6 +96,11 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 o.viewPos = UnityObjectToViewPos(v.vertex);
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+
+                // credits to Farfarer at https://forum.unity.com/threads/fresnel-cg-shader-code-using-vertex-normals.119984/ for this implementation for getting the fresnelValue 
+                float3 viewDir = ObjSpaceViewDir(v.vertex);
+                o.fresnelValue = 1 - saturate(dot(v.normal, viewDir));
+
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
@@ -135,8 +145,13 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 fixed4 oilCol = tex2D(_SamplerTable, float2(reflectance, reflectance));
                 oilCol.a = _Color.a;
                 
+
+                oilCol.a = i.fresnelValue;
+
+
                 col = lerp(col, oilCol, Pooling(i.uv));
                 //col = oilCol;
+
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
