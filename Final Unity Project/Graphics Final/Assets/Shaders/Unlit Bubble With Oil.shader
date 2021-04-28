@@ -13,9 +13,8 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
         _Thickness("Film Thickness", Range(0.0,1.0)) = 1.0
         _WaveLength("Wavelength", Range(0.0,1.0)) = 1.0
         _SamplerTable("SamplerTable", 2D) = "white" {}
-
-        [Toggle] _IsPooling("Oil Pooling", Float) = 1.0
-        _PoolStrength("Pooling Strength",  Float) = 0.0
+        [Space]
+        _PoolStrength("Pooling Amount",  Range(0.0, 1.0)) = 0.0
         //_LightPoint("Light Position", Vector) = (0,0,0,0);
 
         // Display a popup with None,Add,Multiply choices,
@@ -68,6 +67,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             float _ObjIOR;
             float _Thickness;
             float _WaveLength;
+            float _PoolStrength;
 
             inline float4 UnityObjectToClipPosRespectW(in float4 pos)
             {
@@ -86,6 +86,15 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
+
+
+            float Pooling(float2 uv)
+            {
+                float pixelStrength = 1 - uv.y;
+                pixelStrength += (1 - _PoolStrength);
+                return min(pixelStrength, 1.0);
+            }
+
 
             fixed4 frag (v2f i) : SV_Target   // the fragment shader
             {
@@ -109,13 +118,12 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
                 //reflectance = (reflectance - 380);
                 //reflectance = (reflectance-380) / 400;
-
-                col = tex2D(_SamplerTable, float2(reflectance, reflectance));
+                fixed4 oilCol = tex2D(_SamplerTable, float2(reflectance, reflectance));
+                oilCol.a = _Color.a;
                 
-                col = float4(i.uv.x, i.uv.x, i.uv.x,1.0);
-                col.a = _Color.a;
+                col = lerp(col, oilCol, Pooling(i.uv));
+                //col = oilCol;
 
-                
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;

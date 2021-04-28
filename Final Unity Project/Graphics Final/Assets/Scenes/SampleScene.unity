@@ -492,11 +492,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 019cdac4f8f0cd3498896178f8409e75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingBobHeight: 0.609
-  bobSpeed: 0.216
-  xRotationAmount: 0.01
-  yRotationAmount: 0.006
-  zRotationAmount: 0.029
+  startingBobHeight: 0.547
+  bobSpeed: 0.126
+  xRotationAmount: 0
+  yRotationAmount: 0.008
+  zRotationAmount: 0
 --- !u!23 &1413465365
 MeshRenderer:
   m_ObjectHideFlags: 0
