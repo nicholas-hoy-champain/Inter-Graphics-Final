@@ -2,14 +2,29 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 {
     Properties
     {
+        [Header(Basics)]
+        [Space]
         _Color("Color", Color) = (1, 1, 1, 1)
         _MainTex("Texture", 2D) = "white" {}
+        [Header(Oil Characteristics)]
+        [Space]
         _FilmIOR("Film IOR", Range(1.0,5.0)) = 1.4433
         _ObjIOR("Object IOR", Range(1.0,5.0)) = 1.333
         _Thickness("Film Thickness", Range(0.0,1.0)) = 1.0
         _WaveLength("Wavelength", Range(0.0,1.0)) = 1.0
         _SamplerTable("SamplerTable", 2D) = "white" {}
+
+        [Toggle] _IsPooling("Oil Pooling", Float) = 1.0
+        _PoolStrength("Pooling Strength",  Float) = 0.0
         //_LightPoint("Light Position", Vector) = (0,0,0,0);
+
+        // Display a popup with None,Add,Multiply choices,
+        // and setup corresponding shader keywords.
+        //[KeywordEnum(None, Add, Multiply)] _Overlay("Overlay mode", Float) = 0
+        //_OverlayTex("Overlay", 2D) = "black" {}
+
+        // Display as a toggle.
+        //[Toggle] _Invert("Invert color?", Float) = 0
     }
     SubShader
     {
