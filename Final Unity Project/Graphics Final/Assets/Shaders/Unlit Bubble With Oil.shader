@@ -16,6 +16,9 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
         [Toggle] _IsPooling("Oil Pooling", Float) = 1.0
         _PoolStrength("Pooling Strength",  Float) = 0.0
+
+        [KeywordEnum(Even, Bubble, Timed Bubble, Puddle)] _SpreadMode("Oil Spread Mode", Float) = 0
+
         //_LightPoint("Light Position", Vector) = (0,0,0,0);
 
         // Display a popup with None,Add,Multiply choices,
@@ -68,6 +71,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             float _ObjIOR;
             float _Thickness;
             float _WaveLength;
+            float _SpreadMode;
 
             inline float4 UnityObjectToClipPosRespectW(in float4 pos)
             {
@@ -90,6 +94,11 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             fixed4 frag (v2f i) : SV_Target   // the fragment shader
             {
                 const float PI = 3.14159265;
+                
+                //set up spread mode 
+                float isPuddle = step(_SpreadMode, 3.0) * step(3.0, _SpreadMode);
+                float isBubbleTimed = step(_SpreadMode, 2.0) * step(2.0, _SpreadMode);
+                float isBubble = step(_SpreadMode, 1.0) * step(1.0, _SpreadMode) + isBubbleTimed;
 
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv) * _Color;
@@ -98,8 +107,9 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
                 float viewAngle = dot(i.viewNormal, normalize(-i.viewPos));
                 
-                float thickness = _Thickness * (1-cos(viewAngle));
-                //float thickness = _Thickness * (1-cos(viewAngle));
+                float thickness = _Thickness;
+
+                thickness = thickness * (1-cos(viewAngle));
                 
                 float isInverted = step(_ObjIOR, _FilmIOR) * PI / 2;
 
