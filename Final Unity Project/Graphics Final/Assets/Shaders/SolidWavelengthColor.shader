@@ -37,7 +37,7 @@ Shader "Unlit/SolidWavelengthColor"
 
             float pieceWiseGausian(float x, float scale, float peak, float leftSpread, float rightSpread)
             {
-                float spread = step(peak,x) * leftSpread + step(x, peak) * rightSpread;
+                float spread = step(x,peak) * leftSpread + step(peak, x) * rightSpread;
                 float t = (x - peak) / spread;
                 return scale * exp(-(t*t) / 2);
             }
@@ -53,9 +53,10 @@ Shader "Unlit/SolidWavelengthColor"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                const float3x3 CIEtoRGB = float3x3(.41847,-0.15866,-0.082835,
+                float3x3 CIEtoRGB = float3x3(.41847,-0.15866,-0.082835,
                                                     -0.091169, 0.25243, 0.015708,
                                                     0.00092090,-0.0025498,0.17860);
+                CIEtoRGB = transpose(CIEtoRGB);
 
                 float3 CIExyz;
 
@@ -74,7 +75,12 @@ Shader "Unlit/SolidWavelengthColor"
                 CIExyz.z = pieceWiseGausian(wavelen, 1.217, 4370, 118, 360) +
                     pieceWiseGausian(wavelen, 0.681, 4590, 260, 138);
 
-                float3 CIErgb = mul(CIEtoRGB, CIExyz);
+                float CIExyz_sum = CIExyz.x + CIExyz.y + CIExyz.z;
+                float2 CIExy;
+                CIExy.x = CIExyz.x / CIExyz_sum;
+                CIExy.y = CIExyz.y / CIExyz_sum;
+
+                float3 CIErgb = mul(CIExyz, CIEtoRGB);
                 float CIErgb_sum = CIErgb.x+ CIErgb.y+ CIErgb.z;
 
                 float3 CIErg;
@@ -82,15 +88,24 @@ Shader "Unlit/SolidWavelengthColor"
                 CIErg.y = CIErgb.y / CIErgb_sum;
                 CIErg.z = CIErgb.y;
 
-                float2 dir = CIErg - float2(1 / 3, 1 / 3);
+                /*float done = step(0.0, CIErgb.x) * step(CIErgb.x, 1.0)
+                    * step(0.0, CIErgb.y) * step(CIErgb.y, 1.0)
+                    * step(0.0, CIErgb.z) * step(CIErgb.z, 1.0);
 
-                float isInvis = step(CIErg.r,0);
-                fixed4 col = float4(CIErgb, 1) * (1 - isInvis);
+                float3 dir = float3(1.0/3.0, 1.0 / 3.0, 1.0 / 3.0) - CIErgb;
+                int steps = 200;
+                dir = dir / steps;
+                for (int i = 0; i < steps && done < 1.0; i++)
+                {
+                    CIErgb = CIErgb + dir;
+                    done = step(0.0, CIErgb.x) * step(CIErgb.x, 1.0)
+                        * step(0.0, CIErgb.y) * step(CIErgb.y, 1.0)
+                        * step(0.0, CIErgb.z) * step(CIErgb.z, 1.0);
+                }*/
 
-                CIErg.xy = float2(0, 1 / 3 + ((1 / 3) * (dir.y / dir.x)));
-                //CIErgb.x 
-
-                col += float4(CIErg,1) * (isInvis);
+                CIErgb = CIErgb * 1/max(max(CIErgb.x, CIErgb.y), CIErgb.z);
+ 
+                fixed4 col = float4(CIErgb, 1);
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
