@@ -9,6 +9,7 @@
 /// bubble size gradually deforming
 /// seperate transparency for the plain bubble and the oil, which can then be added together
 /// 
+/// oil forming a puddle? (uses distance from the uv's center)
 /// 
 /// possibly apply the effect to the camera to communicate the player being drenched in oil
 /// 
