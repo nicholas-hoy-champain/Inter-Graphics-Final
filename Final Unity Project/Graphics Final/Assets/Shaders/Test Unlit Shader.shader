@@ -7,7 +7,8 @@ Shader "Unlit/Test Unlit Shader"
         _FilmIOR("Film IOR", Range(1.0,5.0)) = 1.4433
         _ObjIOR("Object IOR", Range(1.0,5.0)) = 1.333
         _Thickness("Film Thickness", Range(0.01,1.0)) = 1.0
-        _WaveLength("Wavelength", Float) = 1.0
+        _WaveLength("Wavelength", Range(0.0,1.0)) = 1.0
+        _SamplerTable("SamplerTable", 2D) = "white" {}
         //_LightPoint("Light Position", Vector) = (0,0,0,0);
     }
     SubShader
@@ -42,9 +43,10 @@ Shader "Unlit/Test Unlit Shader"
                 UNITY_FOG_COORDS(1)
             };
 
-            const float PI = 3.14159265;
+            
 
             sampler2D _MainTex;
+            sampler2D _SamplerTable;
             float4 _MainTex_ST;
             fixed4 _Color;
             float _FilmIOR;
@@ -65,6 +67,8 @@ Shader "Unlit/Test Unlit Shader"
 
             fixed4 frag (v2f i) : SV_Target
             {
+                const float PI = 3.14159265;
+
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv) * _Color;
 
@@ -79,9 +83,12 @@ Shader "Unlit/Test Unlit Shader"
 
                 float wavelength = _WaveLength;
 
-                float reflectance = pow(cos(2 * PI * thickness * _FilmIOR / wavelength + isInverted), 2);
-                
-                col = float4(reflectance, reflectance, reflectance, reflectance);
+                float reflectance = pow(1.0 * cos(2 * PI * thickness * _FilmIOR / wavelength + isInverted), 2);
+
+                //reflectance = (reflectance - 380);
+                //reflectance = (reflectance-380) / 400;
+
+                col = tex2D(_SamplerTable, float2(reflectance, reflectance));
                 col.a = _Color.a;
 
                 // apply fog
