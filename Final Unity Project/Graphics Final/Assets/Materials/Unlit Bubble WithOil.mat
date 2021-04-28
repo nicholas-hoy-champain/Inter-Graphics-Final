@@ -87,6 +87,7 @@ Material:
     - _PoolStrength: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
+    - _SpreadMode: 0
     - _SrcBlend: 1
     - _Thickness: 0.896
     - _UVSec: 0

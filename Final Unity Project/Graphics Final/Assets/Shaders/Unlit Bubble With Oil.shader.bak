@@ -6,11 +6,6 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
         [Space]
         _Color("Color", Color) = (1, 1, 1, 1)
         _MainTex("Texture", 2D) = "white" {}
-
-        [Header(Oil Type)]
-        [Space]
-        [KeywordEnum(Even, Bubble, Timed Bubble, Puddle)] _SpreadMode("Oil Spread Mode", Float) = 0        //_LightPoint("Light Position", Vector) = (0,0,0,0);
-        
         [Header(Oil Characteristics)]
         [Space]
         _FilmIOR("Film IOR", Range(1.0,5.0)) = 1.4433
@@ -21,7 +16,14 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
         [Space]
         _PoolStrength("Pooling Amount",  Range(0.0, 1.0)) = 0.0
+=======
 
+        [Toggle] _IsPooling("Oil Pooling", Float) = 1.0
+        _PoolStrength("Pooling Strength",  Float) = 0.0
+
+        [KeywordEnum(Even, Bubble, Timed Bubble, Puddle)] _SpreadMode("Oil Spread Mode", Float) = 0
+
+        //_LightPoint("Light Position", Vector) = (0,0,0,0);
 
         // Display a popup with None,Add,Multiply choices,
         // and setup corresponding shader keywords.
@@ -75,6 +77,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             float _WaveLength;
 
             float _PoolStrength;
+=======
             float _SpreadMode;
 
             inline float4 UnityObjectToClipPosRespectW(in float4 pos)
