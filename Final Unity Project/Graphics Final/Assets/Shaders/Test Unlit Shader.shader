@@ -6,7 +6,7 @@ Shader "Unlit/Test Unlit Shader"
         _MainTex("Texture", 2D) = "white" {}
         _FilmIOR("Film IOR", Range(1.0,5.0)) = 1.4433
         _ObjIOR("Object IOR", Range(1.0,5.0)) = 1.333
-        _Thickness("Film Thickness", Range(0.01,1.0)) = 1.0
+        _Thickness("Film Thickness", Range(0.0,1.0)) = 1.0
         _WaveLength("Wavelength", Range(0.0,1.0)) = 1.0
         _SamplerTable("SamplerTable", 2D) = "white" {}
         //_LightPoint("Light Position", Vector) = (0,0,0,0);
@@ -54,10 +54,17 @@ Shader "Unlit/Test Unlit Shader"
             float _Thickness;
             float _WaveLength;
 
+            inline float4 UnityObjectToClipPosRespectW(in float4 pos)
+            {
+                return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, pos));
+            }
+
             v2f vert (appdata v)
             {
                 v2f o;
-                o.viewNormal = normalize(mul((float3x3)UNITY_MATRIX_MV, v.normal));
+                o.viewNormal = normalize(UnityObjectToViewPos(v.normal));
+                //o.viewNormal = UnityObjectToClipPosRespectW(v.normal);
+                //o.viewNormal = normalize(mul((float3x3)UNITY_MATRIX_MV, v.normal));
                 o.viewPos = UnityObjectToViewPos(v.vertex);
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
@@ -89,8 +96,11 @@ Shader "Unlit/Test Unlit Shader"
                 //reflectance = (reflectance-380) / 400;
 
                 col = tex2D(_SamplerTable, float2(reflectance, reflectance));
+                
+                col = float4(i.uv.x, i.uv.x, i.uv.x,1.0);
                 col.a = _Color.a;
 
+                
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
