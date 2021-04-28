@@ -1,4 +1,4 @@
-Shader "Unlit/Test Unlit Shader"
+Shader "Oil Shaders/Unlit Bubble With Oil"
 {
     Properties
     {
@@ -59,7 +59,7 @@ Shader "Unlit/Test Unlit Shader"
                 return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, pos));
             }
 
-            v2f vert (appdata v)
+            v2f vert (appdata v) // the vertex shader
             {
                 v2f o;
                 o.viewNormal = normalize(UnityObjectToViewPos(v.normal));
@@ -72,7 +72,7 @@ Shader "Unlit/Test Unlit Shader"
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            fixed4 frag (v2f i) : SV_Target   // the fragment shader
             {
                 const float PI = 3.14159265;
 
