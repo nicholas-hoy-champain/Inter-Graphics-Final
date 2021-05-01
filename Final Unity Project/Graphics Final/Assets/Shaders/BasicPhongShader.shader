@@ -7,8 +7,9 @@ Shader "Unlit/BasicPhongShader"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque"  "LightMode" = "ForwardBase" }
-        LOD 100
+        Tags {"LightMode" = "ForwardBase"   "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent"}
+        Blend SrcAlpha OneMinusSrcAlpha
+        LOD 200
 
         Pass
         {
@@ -77,7 +78,8 @@ Shader "Unlit/BasicPhongShader"
                 float3 effect = unity_LightColor[0] * (lmbCoeff + phongCoeff) * attenuation;
 
                 // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv) * float4(effect,1.0);
+                fixed4 col = tex2D(_MainTex, i.uv);
+                col = col * float4(effect, col.a);
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
