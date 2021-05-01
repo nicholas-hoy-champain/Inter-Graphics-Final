@@ -23,7 +23,7 @@ public class BubbleMovementScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateBobHeight();
+        //UpdateBobHeight();
         UpdateRotation();
     }
 
