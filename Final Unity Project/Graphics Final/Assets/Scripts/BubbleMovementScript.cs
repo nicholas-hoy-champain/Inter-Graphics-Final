@@ -34,6 +34,7 @@ public class BubbleMovementScript : MonoBehaviour
         transform.position = transform.position + new Vector3(0.0f, currentBobPosOffset, 0.0f);
     }
 
+
     void UpdateRotation()
     {
         transform.Rotate(xRotationAmount, yRotationAmount, zRotationAmount);
