@@ -122,6 +122,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 float isPuddle = step(_SpreadMode, 3.0) * step(3.0, _SpreadMode);
                 float isBubbleTimed = step(_SpreadMode, 2.0) * step(2.0, _SpreadMode);
                 float isBubble = step(_SpreadMode, 1.0) * step(1.0, _SpreadMode) + isBubbleTimed;
+                float isEven = step(_SpreadMode, 0.0) * step(0.0, _SpreadMode);
 
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv) * _Color;
@@ -131,6 +132,11 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 float viewAngle = dot(i.viewNormal, normalize(-i.viewPos));
                 
                 float thickness = _Thickness;
+
+                float bubbleParam = i.uv.y * i.uv.y * i.uv.y * i.uv.y; //Pooling(i.uv);;
+
+                thickness = isEven * thickness +
+                            isBubble * lerp(0, thickness, bubbleParam);
 
                 thickness = thickness * (1-cos(viewAngle));
                 
@@ -146,7 +152,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 oilCol.a = _Color.a;
                 
 
-                oilCol.a = i.fresnelValue;
+                oilCol.a = i.fresnelValue * reflectance;
 
 
                 col = lerp(col, oilCol, Pooling(i.uv));
