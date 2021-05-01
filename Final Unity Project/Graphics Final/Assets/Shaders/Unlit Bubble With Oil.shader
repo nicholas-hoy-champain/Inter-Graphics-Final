@@ -22,6 +22,10 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
         [Space]
         _PoolStrength("Pooling Amount",  Range(0.0, 1.0)) = 0.0
 
+        [Header(Phong Base)]
+        [Space]
+        _LightRadius("Light Radius", Float) = 1000
+
 
         // Display a popup with None,Add,Multiply choices,
         // and setup corresponding shader keywords.
@@ -33,7 +37,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
     }
     SubShader
     {
-        Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType"="Transparent" }
+        Tags {"LightMode" = "ForwardBase"   "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent"}
         Blend SrcAlpha OneMinusSrcAlpha
         LOD 200
 
@@ -46,6 +50,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
+            #include "PhongAndOil.cginc"
 
             struct appdata
             {
@@ -56,9 +61,10 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
             struct v2f
             {
-                half3 viewNormal : TEXCOORD0;
+                float3 viewNormal : TEXCOORD0;
                 float3 viewPos : TEXCOORD1;
-                float2 uv : TEXCOORD2;
+                float3 viewLightPos : TEXCOORD2;
+                float2 uv : TEXCOORD3;
                 float4 vertex : SV_POSITION;
 
                 // credits to http://kylehalladay.com/blog/tutorial/2014/02/18/Fresnel-Shaders-From-The-Ground-Up.html
@@ -81,6 +87,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
             float _PoolStrength;
             float _SpreadMode;
+            float _LightRadius;
 
             inline float4 UnityObjectToClipPosRespectW(in float4 pos)
             {
@@ -90,9 +97,9 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             v2f vert (appdata v) // the vertex shader
             {
                 v2f o;
-                o.viewNormal = normalize(UnityObjectToViewPos(v.normal));
+                //o.viewNormal = normalize(UnityObjectToViewPos(v.normal));
                 //o.viewNormal = UnityObjectToClipPosRespectW(v.normal);
-                //o.viewNormal = normalize(mul((float3x3)UNITY_MATRIX_MV, v.normal));
+                o.viewNormal = normalize(mul((float3x3)UNITY_MATRIX_MV, v.normal));
                 o.viewPos = UnityObjectToViewPos(v.vertex);
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
@@ -100,6 +107,9 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 // credits to Farfarer at https://forum.unity.com/threads/fresnel-cg-shader-code-using-vertex-normals.119984/ for this implementation for getting the fresnelValue 
                 float3 viewDir = ObjSpaceViewDir(v.vertex);
                 o.fresnelValue = 1 - saturate(dot(v.normal, viewDir));
+
+                //Phong data
+                o.viewLightPos = mul((float3x3)UNITY_MATRIX_V, float3(unity_4LightPosX0.x, unity_4LightPosY0.x, unity_4LightPosZ0.x));
 
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
@@ -114,11 +124,11 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             }
 
 
-            fixed4 frag (v2f i) : SV_Target   // the fragment shader
+            fixed4 frag(v2f i) : SV_Target   // the fragment shader
             {
-                const float PI = 3.14159265;
-                
-                //set up spread mode 
+                /*const float PI = 3.14159265;
+
+                //set up spread mode
                 float isPuddle = step(_SpreadMode, 3.0) * step(3.0, _SpreadMode);
                 float isBubbleTimed = step(_SpreadMode, 2.0) * step(2.0, _SpreadMode);
                 float isBubble = step(_SpreadMode, 1.0) * step(1.0, _SpreadMode) + isBubbleTimed;
@@ -130,7 +140,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 float2 distanceFromCenter = i.uv - 0.5;
 
                 float viewAngle = dot(i.viewNormal, normalize(-i.viewPos));
-                
+
                 float thickness = _Thickness;
 
                 float bubbleParam = i.uv.y * i.uv.y * i.uv.y * i.uv.y; //Pooling(i.uv);;
@@ -139,7 +149,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                             isBubble * lerp(0, thickness, bubbleParam);
 
                 thickness = thickness * (1-cos(viewAngle));
-                
+
                 float isInverted = step(_ObjIOR, _FilmIOR) * PI / 2;
 
                 float wavelength = _WaveLength;
@@ -150,14 +160,23 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 //reflectance = (reflectance-380) / 400;
                 fixed4 oilCol = tex2D(_SamplerTable, float2(reflectance, reflectance));
                 oilCol.a = _Color.a;
+
+
+                oilCol.a = i.fresnelValue * reflectance; */
+
+                //Oil
+                fixed4 oilCol = thinFilmEffect(_SpreadMode, i.uv, i.viewNormal,
+                                                i.viewPos, _Thickness, _ObjIOR, 
+                                                _FilmIOR, _WaveLength, _SamplerTable, i.fresnelValue);
                 
+                //Phong
+                float3 light = phongEffect(i.viewPos, i.viewNormal, i.viewLightPos, _LightRadius);
+                fixed4 phongCol = fixed4(light,(light.x + light.y + light.z) / 3);
 
-                oilCol.a = i.fresnelValue * reflectance;
-
-
+                // sample the texture
+                fixed4 col = tex2D(_MainTex, i.uv) * _Color;
                 col = lerp(col, oilCol, Pooling(i.uv));
-                //col = oilCol;
-
+                col = lerp(col, phongCol, phongCol.a);
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);

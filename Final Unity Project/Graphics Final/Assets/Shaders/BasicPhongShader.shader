@@ -3,7 +3,7 @@ Shader "Unlit/BasicPhongShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _LightRadius ("Light Radius", float) = 1000
+        _LightRadius ("Light Radius", Float) = 1000
     }
     SubShader
     {
@@ -14,13 +14,14 @@ Shader "Unlit/BasicPhongShader"
         Pass
         {
             CGPROGRAM
-            #pragma vertex vert
+            #pragma vertex vert 
             #pragma fragment frag
             // make fog work
             #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
             #include "UnityLightingCommon.cginc"
+            #include "PhongAndOil.cginc"
 
             struct appdata
             {
@@ -61,7 +62,7 @@ Shader "Unlit/BasicPhongShader"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                float radiusInvSqr = 1/(_LightRadius * _LightRadius);
+                /*float radiusInvSqr = 1/(_LightRadius * _LightRadius);
 
                 float3 wNormal = normalize(i.normal);
                 float3 L = i.wLightPos - i.wPos;
@@ -75,7 +76,9 @@ Shader "Unlit/BasicPhongShader"
                 float3 R = reflect(-L, wNormal);
                 float phongCoeff = max(0.0, dot(R, V));
 
-                float3 effect = unity_LightColor[0] * (lmbCoeff + phongCoeff) * attenuation;
+                float3 effect = unity_LightColor[0] * (lmbCoeff + phongCoeff) * attenuation;*/
+
+                float3 effect = phongEffect(i.wPos, i.normal, i.wLightPos, _LightRadius);
 
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv);
