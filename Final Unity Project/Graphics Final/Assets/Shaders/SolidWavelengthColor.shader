@@ -35,6 +35,11 @@ Shader "Unlit/SolidWavelengthColor"
             float _Wavelength;
             float4 _MainTex_ST;
 
+            //CIE XYZ functions were referenced in nearly every source from the RTR textbook, 
+            //but had to dig for the actual equation and found them on the wikipedia page for 
+            //CIE 1931 color space.
+            //https://en.wikipedia.org/wiki/CIE_1931_color_space
+
             float pieceWiseGausian(float x, float scale, float peak, float leftSpread, float rightSpread)
             {
                 float spread = step(x,peak) * leftSpread + step(peak, x) * rightSpread;
@@ -61,11 +66,6 @@ Shader "Unlit/SolidWavelengthColor"
                 float3 CIExyz;
 
                 float wavelen = _Wavelength * 10; //convert to angstrom
-
-                //CIE XYZ functions were referenced in nearly every source from the RTR textbook, 
-                //but had to dig for the actual equation and found them on the wikipedia page for 
-                //CIE 1931 color space
-                //https://en.wikipedia.org/wiki/CIE_1931_color_space
 
                 CIExyz.x = pieceWiseGausian(wavelen,  1.056, 5998, 379, 310) +
                     pieceWiseGausian(wavelen,  0.362, 4420, 160, 267) +
