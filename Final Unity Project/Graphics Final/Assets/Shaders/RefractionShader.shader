@@ -120,9 +120,11 @@ Shader "Unlit/RefractionShader"
                 float2 test = uv;
 
 
-                float flip = step(.5,uv.y * .5 - floor(uv.y * .5));
+                float flipY = step(.5,uv.y * .5 - floor(uv.y * .5));
+                float flipX = step(.5,uv.x * .5 - floor(uv.x * .5));
                 uv = uv - floor(uv);
-                uv.y = uv.y * (.5 - flip) * 2;
+                uv.y = uv.y * (.5 - flipY) * 2;
+                uv.x = uv.x * (.5 - flipX) * 2;
 
                 fixed4 col = tex2D(_WorldBehind,uv);
                 //col = tex2Dproj(_WorldBehind, screenPos);
