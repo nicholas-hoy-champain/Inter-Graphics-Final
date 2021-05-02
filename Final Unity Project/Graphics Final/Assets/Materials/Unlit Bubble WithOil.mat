@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Unlit Bubble WithOil
   m_Shader: {fileID: 4800000, guid: 985c1154ec447264190cb66247fab465, type: 3}
-  m_ShaderKeywords: _OVERLAY_NONE _SPREADMODE_EVEN
+  m_ShaderKeywords: _OVERLAY_NONE _SPREADMODE_PUDDLE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -89,10 +89,10 @@ Material:
     - _OcclusionStrength: 1
     - _Overlay: 0
     - _Parallax: 0.02
-    - _PoolStrength: 0.284
+    - _PoolStrength: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpreadMode: 0
+    - _SpreadMode: 3
     - _SrcBlend: 1
     - _Thickness: 0.896
     - _UVSec: 0

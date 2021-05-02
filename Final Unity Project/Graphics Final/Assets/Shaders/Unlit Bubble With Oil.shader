@@ -136,13 +136,6 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             }
 
 
-            float Pooling(float2 uv)
-            {
-                float pixelStrength = 1 - uv.y;
-                pixelStrength += (1 - _PoolStrength);
-                return min(pixelStrength, 1.0);
-            }
-
 
             fixed4 frag(v2f i) : SV_Target   // the fragment shader
             {
@@ -169,7 +162,14 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
                 // sample the texture
                 fixed4 col = reflectionCol;
-                col = lerp(col, oilCol, 1-phongCol.a);
+                //col = lerp(col, oilCol, 1-phongCol.a);
+
+                float newAlpha = clamp( (Pooling(i.uv, _PoolStrength) - phongCol.a), 0.0, 1.0);
+
+                col = lerp(col, oilCol, newAlpha );
+
+                //col = lerp(col, oilCol, Pooling(i.uv, _PoolStrength));
+                
                 col = lerp(col, phongCol, phongCol.a * phongCol.a * phongCol.a);
 
                 float a = col.a;

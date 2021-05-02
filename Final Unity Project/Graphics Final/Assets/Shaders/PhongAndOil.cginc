@@ -87,4 +87,11 @@ fixed4 thinFilmEffectWithNoise(float spreadMode, float2 uv, float3 viewNormal, f
     return oilCol;
 }
 
+float Pooling(float2 uv, float poolingStrength)
+{
+    float pixelStrength = 1 - uv.y;
+    pixelStrength += (1 - poolingStrength);
+    return min(pixelStrength, 1.0);
+}
+
 #endif
