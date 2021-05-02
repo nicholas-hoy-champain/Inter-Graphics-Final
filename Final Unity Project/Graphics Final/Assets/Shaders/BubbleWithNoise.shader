@@ -90,6 +90,7 @@ Shader "Oil Shaders/Bubble with noise"
 
             inline float4 UnityObjectToClipPosRespectW(in float4 pos)
             {
+                //return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, pos));
                 return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, pos));
             }
 

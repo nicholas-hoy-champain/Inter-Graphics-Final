@@ -62,12 +62,12 @@ fixed4 thinFilmEffect(float spreadMode, float2 uv, float3 viewNormal, float3 vie
     return oilCol;
 }
 
-fixed4 thinFilmEffectWithNoise(float spreadMode, float2 uv, float3 viewNormal, float3 viewPos, float thickness, float objectIOR, float filmIOR, float wavelength, sampler2D samplerTable, float fresnelValue, sampler2D noiseSample)
+fixed4 thinFilmEffectWithNoise(float spreadMode, float2 uv, float3 viewNormal, float3 viewPos, float thickness, float objectIOR, float filmIOR, float wavelength, sampler2D samplerTable, float fresnelValue, sampler2D noiseSample, float timeModifier)
 {
     //const float PI = 3.14159265;
-    float4 timeScaled = _Time / 50;
+    float timeScaled = (_Time * timeModifier);
 
-    float noiseOffset = tex2D(noiseSample, float2(uv.x + timeScaled.x, uv.y + timeScaled.y));
+    float noiseOffset = tex2D(noiseSample, float2(uv.x + timeScaled.x, uv.y + timeScaled.x));
 
     float portionAffectingThickness = 1; //Don't like these? set'em to 1!
     float rangeToChangeColor = 1; //Don't like these? set'em to 1!
@@ -76,7 +76,7 @@ fixed4 thinFilmEffectWithNoise(float spreadMode, float2 uv, float3 viewNormal, f
 
     float reflectance = determineReflectance(spreadMode, uv, viewNormal, viewPos, thickness, objectIOR, filmIOR, wavelength);
 
-    noiseOffset = tex2D(noiseSample, float2(uv.y - timeScaled.x, uv.x + timeScaled.y));
+    noiseOffset = tex2D(noiseSample, float2(uv.y - timeScaled.x, uv.x + timeScaled.x));
 
     float2 offsetReflectance = float2(reflectance, reflectance);
     offsetReflectance.x = offsetReflectance.x + noiseOffset * rangeToChangeColor;

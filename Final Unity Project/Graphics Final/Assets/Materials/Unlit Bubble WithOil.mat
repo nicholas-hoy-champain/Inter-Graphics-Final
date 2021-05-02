@@ -95,6 +95,7 @@ Material:
     - _SpreadMode: 3
     - _SrcBlend: 1
     - _Thickness: 0.896
+    - _TimeScale: 1
     - _UVSec: 0
     - _WaveLength: 0.399
     - _ZWrite: 1

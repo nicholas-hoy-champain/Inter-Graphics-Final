@@ -19,12 +19,14 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
         _WaveLength("Wavelength", Range(0.0,1.0)) = 1.0
         _SamplerTable("SamplerTable", 2D) = "white" {}
 
+
         [Space]
         _PoolStrength("Pooling Amount",  Range(0.0, 1.0)) = 0.0
 
         [Header(Noise Offst)]
         [Space]
         _NoiseSample("Noise Sample", 2D) = "white" {}
+        _TimeScale("Oil's drift speed", Range(0.0,1.0)) = 1.0
 
         [Header(Phong Base)]
         [Space]
@@ -99,12 +101,14 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             float _SpreadMode;
 
             sampler2D _NoiseSample;
+            float _TimeScale;
 
             float _LightRadius;
 
             inline float4 UnityObjectToClipPosRespectW(in float4 pos)
             {
-                return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, pos));
+                return (UnityObjectToViewPos(mul(unity_ObjectToWorld, pos)),1.0);
+                //return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, pos));
             }
 
             v2f vert (appdata v) // the vertex shader
@@ -153,7 +157,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 fixed4 oilCol = thinFilmEffectWithNoise(_SpreadMode, i.uv, i.viewNormal,
                                                 i.viewPos, _Thickness, _ObjIOR, 
                                                 _FilmIOR, _WaveLength, _SamplerTable, 
-                                                i.fresnelValue, _NoiseSample);
+                                                i.fresnelValue, _NoiseSample, _TimeScale);
                 //DEBUGGING
                 //oilCol = thinFilmEffect(_SpreadMode, i.uv, i.viewNormal,i.viewPos, _Thickness, _ObjIOR,_FilmIOR, _WaveLength, _SamplerTable,i.fresnelValue);
 
