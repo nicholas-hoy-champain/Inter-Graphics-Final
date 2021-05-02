@@ -3,7 +3,7 @@ Shader "Unlit/BasicPhongShader"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _LightRadius ("Light Radius", Float) = 1000
+        _LightRadius("Light Radius", Range(2.0,50.0)) = 15
     }
     SubShader
     {
@@ -54,7 +54,6 @@ Shader "Unlit/BasicPhongShader"
                 o.normal = UnityObjectToWorldNormal(v.normal);
                 o.wPos = mul(unity_ObjectToWorld, v.vertex);
                 o.wLightPos = float3(unity_4LightPosX0.x, unity_4LightPosY0.x, unity_4LightPosZ0.x);
-                //o.wLightPos = _WorldSpaceLightPos0;
 
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
@@ -62,22 +61,6 @@ Shader "Unlit/BasicPhongShader"
 
             fixed4 frag(v2f i) : SV_Target
             {
-                /*float radiusInvSqr = 1/(_LightRadius * _LightRadius);
-
-                float3 wNormal = normalize(i.normal);
-                float3 L = i.wLightPos - i.wPos;
-                float lightDistance = length(L);
-                L = L / lightDistance;
-
-                float lmbCoeff = max(0.0, dot(wNormal, L));
-                float attenuation = lerp(1.0, 0.0, lightDistance * radiusInvSqr);
-
-                float3 V = normalize(_WorldSpaceCameraPos - i.wPos);
-                float3 R = reflect(-L, wNormal);
-                float phongCoeff = max(0.0, dot(R, V));
-
-                float3 effect = unity_LightColor[0] * (lmbCoeff + phongCoeff) * attenuation;*/
-
                 float3 effect = phongEffect(i.wPos, i.normal, i.wLightPos, _LightRadius);
 
                 // sample the texture
