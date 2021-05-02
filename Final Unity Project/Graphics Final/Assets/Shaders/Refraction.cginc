@@ -4,7 +4,7 @@
 #include "UnityCG.cginc"
 #include "UnityLightingCommon.cginc"
 
-//Real Time Rendering Textbook, 14.5.2
+//Equation found in the Real Time Rendering Textbook, 14.5.2
 float getRefractionVector(float relativeIOR, float3 dirToLight, float surfaceNormal)
 {
 	float w = relativeIOR * dot(dirToLight, surfaceNormal);
