@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
+
 Shader "Unlit/RefractionShader"
 {
     Properties
@@ -6,8 +8,14 @@ Shader "Unlit/RefractionShader"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
+        Tags {"LightMode" = "ForwardBase"   "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent"}
+        Blend SrcAlpha OneMinusSrcAlpha
+        LOD 200
+
+        GrabPass
+        {
+            "_WorldBehind"
+        }
 
         Pass
         {
@@ -18,50 +26,68 @@ Shader "Unlit/RefractionShader"
             #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
-#include "Reflection.cginc"
+            #include "UnityLightingCommon.cginc"
+            #include "Refraction.cginc"
 
             struct appdata
             {
                 float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
                 float3 normal : NORMAL;
+                float4 tangent : TANGENT;
             };
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
-                float3 worldPos : TEXCOORD1;
-                float3 worldNormal : TEXCOORD2;
+                float4 screenPos : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
+                float3x3 tbn : TBN;
             };
 
             sampler2D _MainTex;
+            sampler2D _WorldBehind;
             float4 _MainTex_ST;
             float _IOR;
 
             v2f vert (appdata v)
             {
                 v2f o;
-                o.worldNormal = UnityObjectToWorldNormal(v.normal);
-                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                float3 worldNormal = mul(unity_ObjectToWorld,v.normal);
+                float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.screenPos = ComputeGrabScreenPos(UnityObjectToClipPos(v.vertex));
                 UNITY_TRANSFER_FOG(o,o.vertex);
+                
+                float3 refractVec = refract(normalize(UnityWorldSpaceViewDir(v.vertex)), normalize(worldNormal), _IOR);
+                refractVec = getRefractionVector(_IOR, normalize(worldNormal), normalize(worldNormal));
+                
+                //Macro found on forum about how to go from world -> tangent https://forum.unity.com/threads/world-space-view-direction-in-surface-shader.88583/
+                TANGENT_SPACE_ROTATION;
+
+                o.tbn = rotation;
+                refractVec = mul(unity_WorldToObject, refractVec);
+                refractVec = mul(rotation, refractVec);
+
+                //ScreenPos Offset being attempted is inspired by the Real Time Rendering Textbook, 14.5.2
+                o.screenPos = o.screenPos - fixed4(refractVec, 0);
+
+
+
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            fixed4 frag(v2f i) : SV_Target
             {
                 //Refraction
-                fixed3 refractVec = normalize(refract(normalize(i.worldPos - _WorldSpaceCameraPos), normalize(i.worldNormal), _IOR));
-                fixed4 col = fixed4(reflectionSky(refractVec), 1.0);
+                //i.screenPos = i.screenPos - floor(i.screenPos);
+
+                fixed4 col = tex2Dproj(_WorldBehind, i.screenPos);
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
-            ENDCG
+            ENDCG 
         }
     }
 }

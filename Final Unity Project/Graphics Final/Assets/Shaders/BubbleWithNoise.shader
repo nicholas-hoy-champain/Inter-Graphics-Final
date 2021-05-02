@@ -59,9 +59,9 @@ Shader "Oil Shaders/Bubble with noise"
 
             struct v2f
             {
-                half3 viewNormal : TEXCOORD0;
+                float2 uv : TEXCOORD0;
                 float3 viewPos : TEXCOORD1;
-                float2 uv : TEXCOORD2;
+                half3 viewNormal : TEXCOORD2;
                 float4 vertex : SV_POSITION;
 
                 // credits to http://kylehalladay.com/blog/tutorial/2014/02/18/Fresnel-Shaders-From-The-Ground-Up.html
