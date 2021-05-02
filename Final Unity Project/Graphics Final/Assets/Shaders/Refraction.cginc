@@ -9,8 +9,8 @@ float getRefractionVector(float relativeIOR, float3 dirToLight, float surfaceNor
 {
 	float w = relativeIOR * dot(dirToLight, surfaceNormal);
 	float k = sqrt(1 + (w - relativeIOR) * (w + relativeIOR));
-	float3 refractionVec = normalize((w - k) * surfaceNormal - relativeIOR * dirToLight);
-	return refractionVec;
+	float3 refractionVec = (w - k) * surfaceNormal - relativeIOR * dirToLight;
+	return normalize(refractionVec);
 }
 
 #endif
