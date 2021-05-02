@@ -5,7 +5,8 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
         [Header(Basics)]
         [Space]
         _Color("Color", Color) = (1, 1, 1, 1)
-        _MainTex("Texture", 2D) = "white" {}
+        _MainTex("Main Texture", 2D) = "white" {}
+        _NormalMap("Normal Map", 2D) = "flat_normal" {}
 
         [Header(Oil Type)]
         [Space]
@@ -65,16 +66,20 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
                 float3 normal : NORMAL;
+                float4 tangent : TANGENT;
             };
 
             struct v2f
             {
-                float3 viewNormal : TEXCOORD0;
-                float3 viewPos : TEXCOORD1;
-                float3 worldNormal : TEXCOORD2;
-                float3 worldPos : TEXCOORD3;
-                float3 worldLightPos : TEXCOORD4;
-                float2 uv : TEXCOORD5;
+                float2 uv : TEXCOORD0;
+
+                //Specific use of 3 half3s seen on the unity doc blog that onboards writing custom chaders: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
+                half3 tspace0 : TEXCOORD1;
+                half3 tspace1 : TEXCOORD2;
+                half3 tspace2 : TEXCOORD3; 
+
+                float3 worldPos : TEXCOORD4;
+                float3 worldLightPos : TEXCOORD5;
                 float4 vertex : SV_POSITION;
 
                 // credits to http://kylehalladay.com/blog/tutorial/2014/02/18/Fresnel-Shaders-From-The-Ground-Up.html
@@ -89,9 +94,11 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             
 
             sampler2D _MainTex;
-            sampler2D _SamplerTable;
             float4 _MainTex_ST;
             fixed4 _Color;
+            sampler2D _NormalMap;
+            sampler2D _SamplerTable;
+
             float _FilmIOR;
             float _ObjIOR;
             float _Thickness;
@@ -114,11 +121,16 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             v2f vert (appdata v) // the vertex shader
             {
                 v2f o;
-                //o.viewNormal = normalize(UnityObjectToViewPos(v.normal));
-                //o.viewNormal = UnityObjectToClipPosRespectW(v.normal);
-                o.viewNormal = normalize(mul((float3x3)UNITY_MATRIX_MV, v.normal));
-                o.worldNormal = UnityObjectToWorldNormal(v.normal);
-                o.viewPos = UnityObjectToViewPos(v.vertex);
+                half3 worldNormal = UnityObjectToWorldNormal(v.normal);
+
+                //Specific use of 3 half3s seen on the unity doc blog that onboards writing custom chaders: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
+                half3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
+                half tangentSign = v.tangent.w * unity_WorldTransformParams.w;
+                half3 worldBitangent = cross(worldNormal, worldTangent) * tangentSign;
+                o.tspace0 = half3(worldTangent.x, worldBitangent.x, worldNormal.x);
+                o.tspace1 = half3(worldTangent.y, worldBitangent.y, worldNormal.y);
+                o.tspace2 = half3(worldTangent.z, worldBitangent.z, worldNormal.z);
+
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex);
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
@@ -133,7 +145,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 //Reflection
                 //credits to unity docs for showing me how to access the sky box reflections
                 // https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
-                o.worldRefl = reflect(-mul((float3x3)unity_ObjectToWorld, viewDir), o.worldNormal);
+                o.worldRefl = reflect(-mul((float3x3)unity_ObjectToWorld, viewDir), worldNormal);
 
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
@@ -145,8 +157,16 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             {
                 fixed4 base = tex2D(_MainTex, i.uv) * _Color;
 
+                //Normal Map
+                //Specific use of 3 half3s seen on the unity doc blog that onboards writing custom chaders: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
+                half3 tnormal = UnpackNormal(tex2D(_NormalMap, i.uv));
+                float3 worldNormal;
+                worldNormal.x = dot(i.tspace0, tnormal);
+                worldNormal.y = dot(i.tspace1, tnormal);
+                worldNormal.z = dot(i.tspace2, tnormal);
+
                 //Phong
-                float3 light = phongEffect(i.worldPos, i.worldNormal, i.worldLightPos, _LightRadius);
+                float3 light = phongEffect(i.worldPos, worldNormal, i.worldLightPos, _LightRadius);
                 fixed4 phongCol = fixed4(light, 1);
 
                 base = base * phongCol;
@@ -154,8 +174,11 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 phongCol = (light.x + light.y + light.z) / 3;
 
                 //Oil
-                fixed4 oilCol = thinFilmEffectWithNoise(_SpreadMode, i.uv, i.viewNormal,
-                                                i.viewPos, _Thickness, _ObjIOR, 
+                float3 viewNormal = mul((float3x3)UNITY_MATRIX_V, worldNormal);
+                float3 viewPos = mul((float3x3)UNITY_MATRIX_V, i.worldPos);
+
+                fixed4 oilCol = thinFilmEffectWithNoise(_SpreadMode, i.uv, viewNormal,
+                                                viewPos, _Thickness, _ObjIOR, 
                                                 _FilmIOR, _WaveLength, _SamplerTable, 
                                                 i.fresnelValue, _NoiseSample, _TimeScale);
                 //DEBUGGING
