@@ -76,6 +76,9 @@ Material:
     - _IOR: 1.1
     - _Metallic: 0
     - _Mode: 0
+    - _MorphAmplitude: 0.01
+    - _MorphRate: 1
+    - _MorphWavey: 10
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Shininess: 0.2

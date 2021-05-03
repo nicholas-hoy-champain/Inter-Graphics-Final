@@ -89,6 +89,9 @@ Material:
     - _LightRadius: 15
     - _Metallic: 0
     - _Mode: 0
+    - _MorphAmplitude: 0.01
+    - _MorphRate: 1
+    - _MorphWavey: 10
     - _ObjIOR: 3.29
     - _OcclusionStrength: 1
     - _Overlay: 0
@@ -104,6 +107,6 @@ Material:
     - _WaveLength: 0.399
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 0}
+    - _Color: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
