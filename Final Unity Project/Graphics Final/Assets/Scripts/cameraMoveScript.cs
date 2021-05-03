@@ -8,55 +8,80 @@ public class cameraMoveScript : MonoBehaviour
     //credits to carceloroca at https://answers.unity.com/questions/666905/in-game-camera-movement-like-editor.html for these basic camera movements
 
     [SerializeField]
-    private float lookSpeedH = 2f;
+    float lookSpeedH = 2f;
 
     [SerializeField]
-    private float lookSpeedV = 2f;
+    float lookSpeedV = 2f;
 
     [SerializeField]
-    private float zoomSpeed = 2f;
+    float zoomSpeed = 2f;
 
     [SerializeField]
-    private float dragSpeed = 3f;
+    float baseWasdMoveSpeed;
+    [SerializeField]
+    float shiftWASDSpeedMultiplier;
 
-    private float yaw = 0f;
-    private float pitch = 0f;
+    float wasdZoomSpeed;
+
+    [SerializeField]
+    float dragSpeed = 3f;
+
+    float yaw = 0f;
+    float pitch = 0f;
 
     private void Start()
     {
         // Initialize the correct initial rotation
-        this.yaw = this.transform.eulerAngles.y;
-        this.pitch = this.transform.eulerAngles.x;
+        yaw = transform.eulerAngles.y;
+        pitch = transform.eulerAngles.x;
     }
 
     private void Update()
     {
-        // Only work with the Left Alt pressed
-        if (Input.GetKey(KeyCode.LeftAlt))
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-            //Look around with Left Mouse
-            if (Input.GetMouseButton(0))
-            {
-                this.yaw += this.lookSpeedH * Input.GetAxis("Mouse X");
-                this.pitch -= this.lookSpeedV * Input.GetAxis("Mouse Y");
-
-                this.transform.eulerAngles = new Vector3(this.pitch, this.yaw, 0f);
-            }
-
-            //drag camera around with Middle Mouse
-            if (Input.GetMouseButton(2))
-            {
-                transform.Translate(-Input.GetAxisRaw("Mouse X") * Time.deltaTime * dragSpeed, -Input.GetAxisRaw("Mouse Y") * Time.deltaTime * dragSpeed, 0);
-            }
-
-            if (Input.GetMouseButton(1))
-            {
-                //Zoom in and out with Right Mouse
-                this.transform.Translate(0, 0, Input.GetAxisRaw("Mouse X") * this.zoomSpeed * .07f, Space.Self);
-            }
-
-            //Zoom in and out with Mouse Wheel
-            this.transform.Translate(0, 0, Input.GetAxis("Mouse ScrollWheel") * this.zoomSpeed, Space.Self);
+            wasdZoomSpeed = baseWasdMoveSpeed * shiftWASDSpeedMultiplier;
         }
+        else
+            wasdZoomSpeed = baseWasdMoveSpeed;
+
+
+        //Look around with Left Mouse
+        if (Input.GetMouseButton(0))
+        {
+            yaw += lookSpeedH * Input.GetAxis("Mouse X");
+            pitch -= lookSpeedV * Input.GetAxis("Mouse Y");
+
+            transform.eulerAngles = new Vector3(pitch, yaw, 0f);
+        }
+
+        //drag camera around with Middle Mouse
+        if (Input.GetMouseButton(2))
+        {
+            transform.Translate(-Input.GetAxisRaw("Mouse X") * Time.deltaTime * dragSpeed, -Input.GetAxisRaw("Mouse Y") * Time.deltaTime * dragSpeed, 0);
+        }
+
+        if (Input.GetMouseButton(1))
+        {
+            //Zoom in and out with Right Mouse
+            transform.Translate(0, 0, Input.GetAxisRaw("Mouse X") * zoomSpeed * .07f, Space.Self);
+        }
+
+        //Zoom in and out with Mouse Wheel
+        transform.Translate(0, 0, Input.GetAxis("Mouse ScrollWheel") * zoomSpeed, Space.Self);
+
+        transform.Translate(Input.GetAxis("Horizontal") * wasdZoomSpeed, 0.0f, 0.0f, Space.Self);
+        transform.Translate(0.0f, 0.0f, Input.GetAxis("Vertical") * wasdZoomSpeed, Space.Self);
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            transform.Translate(0.0f, wasdZoomSpeed, 0.0f, Space.Self);
+        }
+
+        if (Input.GetKey(KeyCode.Q))
+        {
+            transform.Translate(0.0f, -wasdZoomSpeed, 0.0f, Space.Self);
+        }
+
     }
 }
