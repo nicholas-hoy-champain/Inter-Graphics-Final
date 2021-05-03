@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Oil Puddle
   m_Shader: {fileID: 4800000, guid: 985c1154ec447264190cb66247fab465, type: 3}
-  m_ShaderKeywords: _SPREADMODE_EVEN
+  m_ShaderKeywords: _OVERLAY_NONE _SPREADMODE_PUDDLE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -72,30 +72,30 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _FilmIOR: 3.18
+    - _FilmIOR: 2.82
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _LightRadius: 9.1
+    - _LightRadius: 9.3
     - _Metallic: 0
     - _Mode: 0
     - _MorphAmplitude: 0
     - _MorphRate: 0
     - _MorphWavey: 0
-    - _ObjIOR: 1.333
+    - _ObjIOR: 3.33
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _PoolStrength: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpreadMode: 0
+    - _SpreadMode: 3
     - _SrcBlend: 1
     - _Thickness: 1
-    - _TimeScale: 1
+    - _TimeScale: 0.153
     - _UVSec: 0
-    - _WaveLength: 1
+    - _WaveLength: 0.681
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 0.49019608}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
