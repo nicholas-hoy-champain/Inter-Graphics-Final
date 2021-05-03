@@ -66,7 +66,9 @@ Shader "Unlit/RefractionShader"
 
                 o.worldNormal = mul((float3x3)unity_ObjectToWorld, v.normal);
                 o.objPos = morphPos(v.vertex, v.normal, _Time.w * _MorphRate, _MorphAmplitude, _MorphWavey);
-                o.vertex = UnityObjectToClipPos(o.objPos);
+                float3 bobOffset = float3(0, _SinTime.x, 0);
+
+                o.vertex = UnityObjectToClipPos(o.objPos + bobOffset);
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }

@@ -468,7 +468,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 461651bc0a95e2d41be663e23048d705, type: 2}
-  - {fileID: 2100000, guid: b2f924ebb0c022041a1ce1d043b98a8f, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -523,7 +523,6 @@ GameObject:
   - component: {fileID: 1413465367}
   - component: {fileID: 1413465366}
   - component: {fileID: 1413465365}
-  - component: {fileID: 1413465364}
   - component: {fileID: 1413465368}
   m_Layer: 0
   m_Name: Bubble
@@ -532,23 +531,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1413465364
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1413465363}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 019cdac4f8f0cd3498896178f8409e75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startingBobHeight: 0.547
-  bobSpeed: 0.126
-  xRotationAmount: 0
-  yRotationAmount: 0.008
-  zRotationAmount: 0
 --- !u!23 &1413465365
 MeshRenderer:
   m_ObjectHideFlags: 0

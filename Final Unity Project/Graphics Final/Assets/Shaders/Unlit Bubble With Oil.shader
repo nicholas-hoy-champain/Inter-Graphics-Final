@@ -124,7 +124,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
             inline float4 UnityObjectToClipPosRespectW(in float4 pos)
             {
-                return (UnityObjectToViewPos(mul(unity_ObjectToWorld, pos)),1.0);
+                return float4(UnityObjectToViewPos(mul(unity_ObjectToWorld, pos)),1.0);
                 //return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, pos));
             }
 
@@ -145,7 +145,10 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 o.tspace2 = half3(worldTangent.z, worldBitangent.z, worldNormal.z);
 
                 o.worldPos = mul(unity_ObjectToWorld, objPos);
-                o.vertex = UnityObjectToClipPos(objPos);
+
+                float3 bobOffset = float3(0, _SinTime.x, 0);
+
+                o.vertex = UnityObjectToClipPos(objPos + bobOffset);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
                 // credits to Farfarer at https://forum.unity.com/threads/fresnel-cg-shader-code-using-vertex-normals.119984/ for this implementation for getting the fresnelValue 

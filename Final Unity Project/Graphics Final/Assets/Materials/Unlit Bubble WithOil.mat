@@ -96,13 +96,13 @@ Material:
     - _OcclusionStrength: 1
     - _Overlay: 0
     - _Parallax: 0.02
-    - _PoolStrength: 0.459
+    - _PoolStrength: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SpreadMode: 0
     - _SrcBlend: 1
     - _Thickness: 0.832
-    - _TimeScale: 0.137
+    - _TimeScale: 0.065
     - _UVSec: 0
     - _WaveLength: 0.133
     - _ZWrite: 1
