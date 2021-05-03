@@ -6,6 +6,10 @@ Shader "Unlit/RefractionShader"
     {
         _IOR("Relative IOR", Range(0.1,2)) = 1.4433
         _MainColor("Main Tint", Color) = (1, 1, 1, 1)
+
+        _MorphWavey("Morph Waveiness",Float) = 0
+        _MorphRate("Morph Rate", Float) = 0
+        _MorphAmplitude("Morph Amplitude", Float) = 0
     }
     SubShader
     {
@@ -30,6 +34,7 @@ Shader "Unlit/RefractionShader"
             #include "UnityLightingCommon.cginc"
             #include "Refraction.cginc"
             #include "Reflection.cginc"
+            #include "MorphingPosition.cginc"
 
             struct appdata
             {
@@ -51,12 +56,17 @@ Shader "Unlit/RefractionShader"
             float4 _MainColor;
             float4 _BackColor;
 
+            float _MorphWavey;
+            float _MorphRate;
+            float _MorphAmplitude;
+
             v2f vert (appdata v)
             {
                 v2f o;
+
                 o.worldNormal = mul((float3x3)unity_ObjectToWorld, v.normal);
-                o.objPos = v.vertex;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.objPos = morphPos(v.vertex, v.normal, _Time.w * _MorphRate, _MorphAmplitude, _MorphWavey);
+                o.vertex = UnityObjectToClipPos(o.objPos);
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }

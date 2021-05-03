@@ -33,6 +33,11 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
         [Space]
         _LightRadius("Light Radius", Range(2.0,50.0)) = 15
 
+        [Header(Morphing)]
+        _MorphWavey("Morph Waveiness",Float) = 0
+        _MorphRate("Morph Rate", Float) = 0
+        _MorphAmplitude("Morph Amplitude", Float) = 0
+
 
         // Display a popup with None,Add,Multiply choices,
         // and setup corresponding shader keywords.
@@ -60,6 +65,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             #include "PhongAndOil.cginc"
             #include "Reflection.cginc"
             #include "Refraction.cginc"
+            #include "MorphingPosition.cginc"
 
             struct appdata
             {
@@ -112,6 +118,10 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
             float _LightRadius;
 
+            float _MorphWavey;
+            float _MorphRate;
+            float _MorphAmplitude;
+
             inline float4 UnityObjectToClipPosRespectW(in float4 pos)
             {
                 return (UnityObjectToViewPos(mul(unity_ObjectToWorld, pos)),1.0);
@@ -121,6 +131,9 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             v2f vert (appdata v) // the vertex shader
             {
                 v2f o;
+
+                float4 objPos = morphPos(v.vertex, v.normal, _Time.w * _MorphRate, _MorphAmplitude, _MorphWavey);
+
                 half3 worldNormal = UnityObjectToWorldNormal(v.normal);
 
                 //Specific use of 3 half3s seen on the unity doc blog that onboards writing custom chaders: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
@@ -131,12 +144,12 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
                 o.tspace1 = half3(worldTangent.y, worldBitangent.y, worldNormal.y);
                 o.tspace2 = half3(worldTangent.z, worldBitangent.z, worldNormal.z);
 
-                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.worldPos = mul(unity_ObjectToWorld, objPos);
+                o.vertex = UnityObjectToClipPos(objPos);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
                 // credits to Farfarer at https://forum.unity.com/threads/fresnel-cg-shader-code-using-vertex-normals.119984/ for this implementation for getting the fresnelValue 
-                float3 viewDir = ObjSpaceViewDir(v.vertex);
+                float3 viewDir = ObjSpaceViewDir(objPos);
                 o.fresnelValue = 1 - saturate(dot(v.normal, viewDir));
 
                 //Phong data
