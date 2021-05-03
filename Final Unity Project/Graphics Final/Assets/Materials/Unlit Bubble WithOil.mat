@@ -84,10 +84,10 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HeightDisplace: 0.34599185
+    - _HeightDisplace: -0.054233693
     - _Invert: 0
     - _IsPooling: 1
-    - _LightRadius: 15
+    - _LightRadius: 34.5
     - _Metallic: 0
     - _Mode: 0
     - _MorphAmplitude: 0.01
@@ -103,7 +103,7 @@ Material:
     - _SpreadMode: 0
     - _SrcBlend: 1
     - _Thickness: 0.832
-    - _TimeScale: 0.065
+    - _TimeScale: 0.35
     - _UVSec: 0
     - _WaveLength: 0.133
     - _ZWrite: 1
