@@ -1,12 +1,12 @@
 # Soap Bubble Simulation
-Graphics Final Project by Brandon Boras &amp; Nicholas Perell. This started off as just a visual simulation for thin film interferance, and it ended up slightly ballooning into a myriad of other features and graphical settings. As it is implemented in Unity, most of the shader's options are actually available through the material that the shader is applied to.
+Graphics Final Project by Brandon Boras &amp; Nicholas Perell. This started off as just a visual simulation for thin film interference, and it ended up slightly ballooning into a myriad of other features and graphical settings. As it is implemented in Unity, most of the shader's options are actually available through the material that the shader is applied to.
 
-`Usese Unity 2020.2.1f1`
+`Uses Unity 2020.2.1f1`
 
 ## Features
- ### Thin Film Interference
+ ### Thin-Film Interference
  #### Light Spectrum Sampler
- A sampler of a rainbow texture is mapped to the bubble's uv and altered based on the viewing angle to recreate how white light is refracted into different colors through the film. This can be replaced with a spectrum of a specific set of colours if a different palette is needed.
+ A sampler of a rainbow texture is mapped to the bubble's UV and altered based on the viewing angle to recreate how white light is refracted into different colors through the film. This can be replaced with a spectrum of a specific set of colors if a different palette is needed.
  #### Fresnel Value
  The oil becomes more transparent the closer the viewing angle is to the normal of the bubble's surface at that point. This causes it to be visible as a ring around the bubble instead of simply mapped directly over the UV.
  
@@ -22,8 +22,8 @@ Graphics Final Project by Brandon Boras &amp; Nicholas Perell. This started off 
 ## Controls
  * ***Left Mouse Button*** - When held, rotates the camera proportional to how the cursor is moved
  * ***Middle Mouse Button / Right Mouse Button*** - When held, the perspective shifts inverse to the directions the mouse is moved.
- * ***Scrolling Mouse Wheel*** - Scrolling up moves the cameera forward, scrolling down moves the camera backwards
- * ***WASD Keys/Arrow Keys*** - Moves the camera left and right and forward and backwards from it's current perspective.
+ * ***Scrolling Mouse Wheel*** - Scrolling up moves the camera forward, scrolling down moves the camera backward.
+ * ***WASD Keys/Arrow Keys*** - Moves the camera left and right and forward and backward from its current perspective.
  * ***E Key*** - Raises the camera.
  * ***Q Key*** - Lowers the camera.
  * ***Left Shift Key*** - When held. increases the speed at which the keyboard keys move the camera around.
