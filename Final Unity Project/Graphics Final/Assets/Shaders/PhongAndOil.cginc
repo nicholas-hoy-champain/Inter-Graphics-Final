@@ -25,6 +25,10 @@ float3 phongEffect(float3 wPos, float3 wNormal, float3 wLightPos, float lightRad
 
 float determineReflectance(float spreadMode, float2 uv, float3 viewNormal, float3 viewPos, float thickness, float objectIOR, float filmIOR, float wavelength)
 {
+    //A lot of this was learnt from reading a source in the Real Time Rendering Textbook:
+    //Smits, Brian E., and Gary W. Meyer, “Newton’s Colors:  Simulating Interference  Phenomenain Realistic Image Synthesis,”
+    //in Kadi Bouatouch& Christian Bouville, eds.Photorealism inComputer Graphics, Springer, pp. 185–194, 1992.
+
     const float PI = 3.14159265;
 
     //set up spread mode 
