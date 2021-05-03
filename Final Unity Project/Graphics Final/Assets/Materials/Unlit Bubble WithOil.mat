@@ -101,10 +101,10 @@ Material:
     - _SpecularHighlights: 1
     - _SpreadMode: 0
     - _SrcBlend: 1
-    - _Thickness: 0.896
+    - _Thickness: 0.832
     - _TimeScale: 0.137
     - _UVSec: 0
-    - _WaveLength: 0.399
+    - _WaveLength: 0.133
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 0}
