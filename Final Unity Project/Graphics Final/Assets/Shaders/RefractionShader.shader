@@ -10,6 +10,7 @@ Shader "Unlit/RefractionShader"
         _MorphWavey("Morph Waveiness",Float) = 0
         _MorphRate("Morph Rate", Float) = 0
         _MorphAmplitude("Morph Amplitude", Float) = 0
+        _HeightDisplace("Height", Float) = 0
     }
     SubShader
     {
@@ -59,6 +60,7 @@ Shader "Unlit/RefractionShader"
             float _MorphWavey;
             float _MorphRate;
             float _MorphAmplitude;
+            float _HeightDisplace;
 
             v2f vert (appdata v)
             {
@@ -66,9 +68,10 @@ Shader "Unlit/RefractionShader"
 
                 o.worldNormal = mul((float3x3)unity_ObjectToWorld, v.normal);
                 o.objPos = morphPos(v.vertex, v.normal, _Time.w * _MorphRate, _MorphAmplitude, _MorphWavey);
-                float3 bobOffset = float3(0, _SinTime.x, 0);
-
+                
+                float3 bobOffset = float3(0, _HeightDisplace, 0);
                 o.vertex = UnityObjectToClipPos(o.objPos + bobOffset);
+                
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }

@@ -37,6 +37,7 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
         _MorphWavey("Morph Waveiness",Float) = 0
         _MorphRate("Morph Rate", Float) = 0
         _MorphAmplitude("Morph Amplitude", Float) = 0
+        _HeightDisplace("Height", Float) = 0
 
 
         // Display a popup with None,Add,Multiply choices,
@@ -122,6 +123,9 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
             float _MorphRate;
             float _MorphAmplitude;
 
+            float _HeightDisplace;
+
+
             inline float4 UnityObjectToClipPosRespectW(in float4 pos)
             {
                 return float4(UnityObjectToViewPos(mul(unity_ObjectToWorld, pos)),1.0);
@@ -146,9 +150,9 @@ Shader "Oil Shaders/Unlit Bubble With Oil"
 
                 o.worldPos = mul(unity_ObjectToWorld, objPos);
 
-                float3 bobOffset = float3(0, _SinTime.x, 0);
-
+                float3 bobOffset = float3(0, _HeightDisplace, 0);
                 o.vertex = UnityObjectToClipPos(objPos + bobOffset);
+
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
                 // credits to Farfarer at https://forum.unity.com/threads/fresnel-cg-shader-code-using-vertex-normals.119984/ for this implementation for getting the fresnelValue 
