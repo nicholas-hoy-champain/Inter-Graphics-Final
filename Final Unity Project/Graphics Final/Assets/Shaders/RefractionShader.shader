@@ -95,6 +95,9 @@ Shader "Unlit/RefractionShader"
 
                 col.a = col.a + (1 - col.a) * clamp(1-length(abs(test-.5)-.5)*2,0.0,1.0);
 
+                float average = ((col.r + col.g + col.g) / 3.0);
+                col.rgb = lerp(col.rgb, average, 0.2f);
+
                 col = col * _MainColor;
 
                 // apply fog
