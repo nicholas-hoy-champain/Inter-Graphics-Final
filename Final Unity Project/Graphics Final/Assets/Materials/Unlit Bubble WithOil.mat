@@ -84,7 +84,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HeightDisplace: -0.054233693
+    - _HeightDisplace: -0.3766735
     - _Invert: 0
     - _IsPooling: 1
     - _LightRadius: 34.5

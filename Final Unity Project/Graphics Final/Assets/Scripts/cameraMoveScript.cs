@@ -5,7 +5,7 @@ using UnityEngine;
 public class cameraMoveScript : MonoBehaviour
 {
 
-    //credits to carceloroca at https://answers.unity.com/questions/666905/in-game-camera-movement-like-editor.html for these basic camera movements
+    //credits to carceloroca at https://answers.unity.com/questions/666905/in-game-camera-movement-like-editor.html for the base of this camera movement
 
     [SerializeField]
     float lookSpeedH = 2f;
